@@ -6,10 +6,10 @@ target/
 # Keep source files - src/ will be tracked
 # !src/
 
-# Eclipse specific files
-.classpath
-.project
-.settings/
+# Eclipse specific files (now tracked)
+# .classpath
+# .project
+# .settings/
 
 # Log files
 *.log
