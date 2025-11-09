@@ -3,6 +3,9 @@
 build/
 target/
 
+# Keep source files - src/ will be tracked
+# !src/
+
 # Eclipse specific files
 .classpath
 .project
