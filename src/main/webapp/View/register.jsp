@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - Media Video</title>
+    <title>Đăng ký - Media Video</title>
     <style>
         * {
             margin: 0;
@@ -15,33 +15,34 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
         
-        .login-container {
+        .register-container {
             background: white;
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
         }
         
-        .login-header {
+        .register-header {
             text-align: center;
             margin-bottom: 30px;
         }
         
-        .login-header h1 {
+        .register-header h1 {
             color: #333;
             font-size: 28px;
             margin-bottom: 10px;
         }
         
-        .login-header p {
+        .register-header p {
             color: #666;
             font-size: 14px;
         }
@@ -55,6 +56,10 @@
             margin-bottom: 8px;
             color: #333;
             font-weight: 500;
+        }
+        
+        .form-group label .required {
+            color: #e74c3c;
         }
         
         .form-group input {
@@ -81,17 +86,13 @@
             border-left: 4px solid #c33;
         }
         
-        .success-message {
-            background-color: #efe;
-            color: #3c3;
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            border-left: 4px solid #3c3;
+        .password-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
         }
         
-        .btn-login {
+        .btn-register {
             width: 100%;
             padding: 12px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -104,45 +105,46 @@
             transition: transform 0.2s;
         }
         
-        .btn-login:hover {
+        .btn-register:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
         
-        .btn-login:active {
+        .btn-register:active {
             transform: translateY(0);
         }
         
-        .register-link {
+        .login-link {
             text-align: center;
             margin-top: 20px;
             color: #666;
             font-size: 14px;
         }
         
-        .register-link a {
+        .login-link a {
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
         }
         
-        .register-link a:hover {
+        .login-link a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <h1>Đăng nhập</h1>
-            <p>Media Video Processor</p>
+    <div class="register-container">
+        <div class="register-header">
+            <h1>Đăng ký tài khoản</h1>
+            <p>Tạo tài khoản mới để sử dụng hệ thống</p>
         </div>
         
         <% 
             String error = (String) request.getAttribute("error");
-            String message = request.getParameter("message");
             String username = (String) request.getAttribute("username");
+            String email = (String) request.getAttribute("email");
             if (username == null) username = "";
+            if (email == null) email = "";
         %>
         
         <% if (error != null && !error.isEmpty()) { %>
@@ -151,21 +153,9 @@
             </div>
         <% } %>
         
-        <% if ("logout".equals(message)) { %>
-            <div class="success-message">
-                Bạn đã đăng xuất thành công!
-            </div>
-        <% } %>
-        
-        <% if ("register_success".equals(message)) { %>
-            <div class="success-message">
-                Đăng ký thành công! Vui lòng đăng nhập.
-            </div>
-        <% } %>
-        
-        <form action="<%= request.getContextPath() %>/login" method="post">
+        <form action="<%= request.getContextPath() %>/register" method="post">
             <div class="form-group">
-                <label for="username">Tên đăng nhập</label>
+                <label for="username">Tên đăng nhập <span class="required">*</span></label>
                 <input type="text" id="username" name="username" 
                        value="<%= username %>" 
                        placeholder="Nhập tên đăng nhập" 
@@ -173,17 +163,33 @@
             </div>
             
             <div class="form-group">
-                <label for="password">Mật khẩu</label>
-                <input type="password" id="password" name="password" 
-                       placeholder="Nhập mật khẩu" 
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" 
+                       value="<%= email %>" 
+                       placeholder="Nhập địa chỉ email" 
                        required>
             </div>
             
-            <button type="submit" class="btn-login">Đăng nhập</button>
+            <div class="form-group">
+                <label for="password">Mật khẩu <span class="required">*</span></label>
+                <input type="password" id="password" name="password" 
+                       placeholder="Nhập mật khẩu" 
+                       required>
+                <div class="password-hint">Mật khẩu phải có ít nhất 6 ký tự</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Xác nhận mật khẩu <span class="required">*</span></label>
+                <input type="password" id="confirmPassword" name="confirmPassword" 
+                       placeholder="Nhập lại mật khẩu" 
+                       required>
+            </div>
+            
+            <button type="submit" class="btn-register">Đăng ký</button>
         </form>
         
-        <div class="register-link">
-            Chưa có tài khoản? <a href="<%= request.getContextPath() %>/register">Đăng ký ngay</a>
+        <div class="login-link">
+            Đã có tài khoản? <a href="<%= request.getContextPath() %>/login">Đăng nhập ngay</a>
         </div>
     </div>
 </body>
