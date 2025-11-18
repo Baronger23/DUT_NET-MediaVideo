@@ -4,11 +4,15 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
+import Model.DAO.DBConnect;
+import Service.VoskModelManager;
 import Service.WorkerServiceVosk;
 
 /**
- * Listener khởi động Worker khi server start
- * Worker sẽ chạy ngầm và xử lý các task trong Queue với Vosk STT
+ * ✅ TỐI ƯU HÓA: Listener khởi động Worker khi server start
+ * - Load Vosk models 1 lần duy nhất
+ * - Khởi động Worker pool
+ * - Graceful shutdown
  */
 @WebListener
 public class WorkerInitializer implements ServletContextListener {
@@ -23,10 +27,19 @@ public class WorkerInitializer implements ServletContextListener {
         System.out.println("🚀 Server đang khởi động...");
         System.out.println("========================================");
         
-        // Khởi động 2 Worker threads với Vosk STT (có thể tăng giảm tùy ý)
+        // ✅ BƯỚC 1: Khởi tạo Connection Pool
+        DBConnect dbConnect = DBConnect.getInstance();
+        System.out.println("✓ Connection Pool: " + dbConnect.getPoolStats());
+        
+        // ✅ BƯỚC 2: Load Vosk models 1 lần duy nhất (tiết kiệm RAM)
+        VoskModelManager modelManager = VoskModelManager.getInstance();
+        modelManager.initializeModels();
+        System.out.println("✓ " + modelManager.getModelsStatus());
+        
+        // ✅ BƯỚC 3: Khởi động Worker threads
         worker1 = new WorkerServiceVosk("Worker-1");
         workerThread1 = new Thread(worker1);
-        workerThread1.setDaemon(false); // Không phải daemon để đảm bảo xử lý xong task
+        workerThread1.setDaemon(false);
         workerThread1.start();
         
         worker2 = new WorkerServiceVosk("Worker-2");
@@ -45,7 +58,7 @@ public class WorkerInitializer implements ServletContextListener {
         System.out.println("🛑 Server đang shutdown...");
         System.out.println("========================================");
         
-        // Dừng các Worker
+        // ✅ BƯỚC 1: Dừng các Worker
         if (worker1 != null) {
             worker1.shutdown();
         }
@@ -57,7 +70,7 @@ public class WorkerInitializer implements ServletContextListener {
         try {
             if (workerThread1 != null) {
                 workerThread1.interrupt();
-                workerThread1.join(5000); // Đợi tối đa 5 giây
+                workerThread1.join(5000);
             }
             if (workerThread2 != null) {
                 workerThread2.interrupt();
@@ -68,6 +81,16 @@ public class WorkerInitializer implements ServletContextListener {
         }
         
         System.out.println("✓ Các Worker đã dừng");
+        
+        // ✅ BƯỚC 2: Đóng Vosk models
+        VoskModelManager modelManager = VoskModelManager.getInstance();
+        modelManager.closeModels();
+        
+        // ✅ BƯỚC 3: Đóng Connection Pool
+        DBConnect dbConnect = DBConnect.getInstance();
+        dbConnect.closeAllConnections();
+        
+        System.out.println("✓ Cleanup hoàn tất");
         System.out.println("========================================");
     }
 }

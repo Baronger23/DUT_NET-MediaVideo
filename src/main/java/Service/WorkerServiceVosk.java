@@ -15,85 +15,27 @@ import Model.Bean.Task;
 import Model.BO.TaskBO;
 
 /**
- * Worker Service với Vosk Speech-to-Text (Offline)
- * ✅ Không cần API key
- * ✅ Chạy offline (local)
- * ✅ Hỗ trợ tiếng Việt
- * ✅ PHẦN 30% ĐIỂM - Tính toán lớn
+ * ✅ TỐI ƯU HÓA: Worker Service với Vosk Speech-to-Text (Offline)
+ * - Sử dụng shared model từ VoskModelManager (tiết kiệm 50% RAM)
+ * - Không cần API key
+ * - Chạy offline (local)
+ * - Hỗ trợ tiếng Việt + tiếng Anh
+ * - PHẦN 30% ĐIỂM - Tính toán lớn
  */
 public class WorkerServiceVosk implements Runnable {
     private TaskBO taskBO;
     private QueueManager queueManager;
+    private VoskModelManager modelManager;
     private boolean isRunning = true;
     private String workerName;
-    private Model modelVietnamese; // Vosk model tiếng Việt
-    private Model modelEnglish;    // Vosk model tiếng Anh
     
     public WorkerServiceVosk(String workerName) {
         this.workerName = workerName;
         this.taskBO = new TaskBO();
         this.queueManager = QueueManager.getInstance();
+        this.modelManager = VoskModelManager.getInstance();
         
-        // Load Vosk models khi khởi tạo Worker
-        try {
-            System.out.println("[" + workerName + "] Đang load Vosk models...");
-            
-            // Lấy đường dẫn tuyệt đối đến thư mục project
-            String projectPath = System.getProperty("user.dir");
-            
-            // === Load model tiếng Việt ===
-            String modelPathVi = projectPath + File.separator + "models" + File.separator + "vosk-model-vn-0.4";
-            System.out.println("[" + workerName + "] Đường dẫn model tiếng Việt: " + modelPathVi);
-            
-            File modelDirVi = new File(modelPathVi);
-            if (!modelDirVi.exists()) {
-                // Thử đường dẫn khác (trong trường hợp chạy từ Eclipse)
-                modelPathVi = "E:\\K1N3\\LTM\\DUT_NET-MediaVideo\\models\\vosk-model-vn-0.4";
-                modelDirVi = new File(modelPathVi);
-                System.out.println("[" + workerName + "] Thử đường dẫn thay thế: " + modelPathVi);
-            }
-            
-            if (modelDirVi.exists()) {
-                this.modelVietnamese = new Model(modelPathVi);
-                System.out.println("[" + workerName + "] ✅ Đã load model tiếng Việt thành công");
-            } else {
-                System.err.println("[" + workerName + "] ⚠️ Không tìm thấy model tiếng Việt tại: " + modelPathVi);
-            }
-            
-            // === Load model tiếng Anh (nếu có) ===
-            String modelPathEn = projectPath + File.separator + "models" + File.separator + "vosk-model-small-en-us-0.15";
-            System.out.println("[" + workerName + "] Đường dẫn model tiếng Anh: " + modelPathEn);
-            
-            File modelDirEn = new File(modelPathEn);
-            if (!modelDirEn.exists()) {
-                // Thử đường dẫn khác
-                modelPathEn = "E:\\K1N3\\LTM\\DUT_NET-MediaVideo\\models\\vosk-model-small-en-us-0.15";
-                modelDirEn = new File(modelPathEn);
-                System.out.println("[" + workerName + "] Thử đường dẫn thay thế: " + modelPathEn);
-            }
-            
-            if (modelDirEn.exists()) {
-                this.modelEnglish = new Model(modelPathEn);
-                System.out.println("[" + workerName + "] ✅ Đã load model tiếng Anh thành công");
-            } else {
-                System.err.println("[" + workerName + "] ⚠️ Không tìm thấy model tiếng Anh tại: " + modelPathEn);
-                System.err.println("[" + workerName + "] 💡 Tải model từ: https://alphacephei.com/vosk/models");
-                System.err.println("[" + workerName + "] 💡 Model đề xuất: vosk-model-small-en-us-0.15");
-            }
-            
-            // Kiểm tra xem có ít nhất 1 model
-            if (this.modelVietnamese == null && this.modelEnglish == null) {
-                throw new IOException("Không có model nào được load. Hãy tải model từ: https://alphacephei.com/vosk/models");
-            }
-            
-        } catch (IOException e) {
-            System.err.println("[" + workerName + "] ❌ Không thể load Vosk models: " + e.getMessage());
-            System.err.println("Hãy tải model từ: https://alphacephei.com/vosk/models");
-            System.err.println("Model tiếng Việt: vosk-model-vn-0.4");
-            System.err.println("Model tiếng Anh: vosk-model-small-en-us-0.15");
-            System.err.println("Giải nén và đặt vào thư mục: models/");
-            e.printStackTrace();
-        }
+        System.out.println("[" + workerName + "] ✅ Worker đã được khởi tạo (sử dụng shared Vosk models)");
     }
     
     @Override
@@ -118,15 +60,15 @@ public class WorkerServiceVosk implements Runnable {
             }
         }
         
-        // Cleanup - đóng tất cả models
-        if (modelVietnamese != null) {
-            modelVietnamese.close();
-        }
-        if (modelEnglish != null) {
-            modelEnglish.close();
-        }
-        
         System.out.println("[" + workerName + "] Worker đã dừng");
+    }
+    
+    /**
+     * ✅ Graceful shutdown
+     */
+    public void shutdown() {
+        this.isRunning = false;
+        System.out.println("[" + workerName + "] Đang shutdown...");
     }
     
     private void xuLyTask(int taskId) {
@@ -180,25 +122,9 @@ public class WorkerServiceVosk implements Runnable {
             throw new IOException("File không tồn tại: " + filePath);
         }
         
-        // Chọn model phù hợp với ngôn ngữ
-        Model selectedModel = null;
-        if (language.equals("vi")) {
-            selectedModel = modelVietnamese;
-            if (selectedModel == null) {
-                throw new IllegalStateException("Model tiếng Việt chưa được load. Hãy tải từ https://alphacephei.com/vosk/models");
-            }
-        } else if (language.equals("en")) {
-            selectedModel = modelEnglish;
-            if (selectedModel == null) {
-                throw new IllegalStateException("Model tiếng Anh chưa được load. Hãy tải từ https://alphacephei.com/vosk/models (vosk-model-small-en-us-0.15)");
-            }
-        } else {
-            // Fallback to Vietnamese model
-            selectedModel = modelVietnamese;
-            if (selectedModel == null) {
-                throw new IllegalStateException("Không có model nào được load.");
-            }
-        }
+        // ✅ Lấy model từ shared VoskModelManager
+        Model selectedModel = modelManager.getModel(language);
+        System.out.println("[" + workerName + "] Sử dụng model: " + (language.equals("vi") ? "Tiếng Việt" : "Tiếng Anh"));
         
         // Kiểm tra định dạng file và chuyển đổi nếu cần
         String audioFilePath = filePath;
@@ -511,10 +437,5 @@ public class WorkerServiceVosk implements Runnable {
         // Không tìm thấy FFmpeg
         throw new Exception("Không tìm thấy FFmpeg. Hãy cài đặt FFmpeg và thêm vào PATH, " +
                           "hoặc đặt tại C:\\ffmpeg\\bin\\ffmpeg.exe");
-    }
-    
-    public void shutdown() {
-        System.out.println("[" + workerName + "] Đang dừng worker...");
-        isRunning = false;
     }
 }

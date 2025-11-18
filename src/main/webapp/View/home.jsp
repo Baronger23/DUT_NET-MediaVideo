@@ -14,169 +14,162 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
             min-height: 100vh;
         }
         
         .navbar {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: #4a5568;
             color: white;
-            padding: 15px 30px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
         .navbar-brand {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: bold;
         }
         
         .navbar-user {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
         
         .user-info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            font-size: 14px;
         }
         
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: white;
-            color: #667eea;
+            color: #4a5568;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 14px;
         }
         
         .btn-logout {
-            padding: 8px 20px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid white;
-            border-radius: 5px;
+            padding: 6px 14px;
+            background: white;
+            color: #4a5568;
+            border: none;
+            border-radius: 4px;
             text-decoration: none;
-            transition: all 0.3s;
+            font-size: 13px;
         }
         
         .btn-logout:hover {
-            background: white;
-            color: #667eea;
+            background: #e2e8f0;
         }
         
         .container {
-            max-width: 1200px;
-            margin: 60px auto;
+            max-width: 1000px;
+            margin: 20px auto;
             padding: 0 20px;
         }
         
         .welcome-card {
             background: white;
-            padding: 50px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
         
         .welcome-card h1 {
             color: #333;
-            margin-bottom: 15px;
-            font-size: 36px;
+            margin-bottom: 8px;
+            font-size: 24px;
         }
         
         .welcome-card p {
             color: #666;
-            font-size: 18px;
+            font-size: 14px;
         }
         
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
         }
         
         .feature-card {
             background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            padding: 25px 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
             text-align: center;
-            transition: all 0.3s;
         }
         
         .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+            border-color: #4a5568;
         }
         
         .feature-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
+            font-size: 40px;
+            margin-bottom: 12px;
         }
         
         .feature-card h3 {
             color: #333;
-            margin-bottom: 15px;
-            font-size: 24px;
+            margin-bottom: 8px;
+            font-size: 18px;
         }
         
         .feature-card p {
             color: #666;
-            margin-bottom: 25px;
-            font-size: 15px;
-            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.5;
         }
         
         .btn-primary {
-            padding: 12px 35px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 8px 20px;
+            background: #4a5568;
             color: white;
             border: none;
-            border-radius: 25px;
+            border-radius: 4px;
             text-decoration: none;
             display: inline-block;
-            transition: all 0.3s;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 13px;
         }
         
         .btn-primary:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+            background: #2d3748;
         }
         
         .user-details {
             background: white;
-            padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
         }
         
         .user-details h2 {
             color: #333;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #667eea;
-            font-size: 24px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4a5568;
+            font-size: 18px;
         }
         
         .detail-row {
             display: flex;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
         }
         
         .detail-row:last-child {
@@ -184,23 +177,48 @@
         }
         
         .detail-label {
-            font-weight: 600;
+            font-weight: bold;
             color: #555;
-            width: 200px;
+            width: 150px;
+            font-size: 13px;
         }
         
         .detail-value {
             color: #333;
             flex: 1;
+            font-size: 13px;
         }
         
         .footer {
             text-align: center;
-            padding: 30px;
-            color: white;
-            margin-top: 40px;
-            font-size: 14px;
-            opacity: 0.9;
+            padding: 15px;
+            color: #666;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .welcome-card h1 {
+                font-size: 20px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .detail-label {
+                width: 100%;
+            }
         }
     </style>
 </head>

@@ -3,6 +3,9 @@
 build/
 target/
 
+# Models folder (too large for GitHub)
+models/
+
 # Keep source files - src/ will be tracked
 # !src/
 

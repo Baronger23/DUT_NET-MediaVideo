@@ -78,6 +78,66 @@ public class HistoryController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
+        
+        // Xử lý action xóa task
+        String action = request.getParameter("action");
+        
+        if ("delete".equals(action)) {
+            handleDeleteTask(request, response);
+            return;
+        }
+        
         doGet(request, response);
+    }
+    
+    /**
+     * Xử lý xóa task
+     */
+    private void handleDeleteTask(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // Kiểm tra đăng nhập
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"success\": false, \"message\": \"Chưa đăng nhập\"}");
+            return;
+        }
+        
+        User user = (User) session.getAttribute("user");
+        
+        try {
+            String taskIdStr = request.getParameter("taskId");
+            if (taskIdStr == null || taskIdStr.trim().isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"success\": false, \"message\": \"Thiếu task ID\"}");
+                return;
+            }
+            
+            int taskId = Integer.parseInt(taskIdStr);
+            
+            // Xóa task
+            boolean success = taskService.xoaTask(taskId, user.getId());
+            
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            
+            if (success) {
+                response.getWriter().write("{\"success\": true, \"message\": \"Đã xóa task thành công\"}");
+                System.out.println("[HistoryController] User " + user.getId() + " đã xóa task " + taskId);
+            } else {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.getWriter().write("{\"success\": false, \"message\": \"Không có quyền xóa task này hoặc task không tồn tại\"}");
+            }
+            
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"success\": false, \"message\": \"Task ID không hợp lệ\"}");
+        } catch (Exception e) {
+            System.err.println("[HistoryController] Lỗi khi xóa task: " + e.getMessage());
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"success\": false, \"message\": \"Lỗi server\"}");
+        }
     }
 }

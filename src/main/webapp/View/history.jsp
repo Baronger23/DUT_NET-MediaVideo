@@ -33,10 +33,10 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
         }
         
         .container {
@@ -45,132 +45,154 @@
         }
         
         .header {
-            background: white;
-            padding: 20px;
-            border-radius: 10px 10px 0 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #4a5568;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px 8px 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
         .header h1 {
-            color: #667eea;
-            font-size: 24px;
+            font-size: 20px;
         }
         
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
+            font-size: 13px;
         }
         
         .nav-links {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
         
         .btn {
-            padding: 10px 20px;
+            padding: 6px 14px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             text-decoration: none;
             display: inline-block;
-            transition: all 0.3s;
         }
         
         .btn-primary {
-            background: #667eea;
-            color: white;
+            background: white;
+            color: #4a5568;
         }
         
         .btn-primary:hover {
-            background: #5568d3;
+            background: #e2e8f0;
         }
         
         .btn-secondary {
-            background: #6c757d;
+            background: #2d3748;
             color: white;
         }
         
         .btn-secondary:hover {
-            background: #5a6268;
+            background: #1a202c;
         }
         
         .main-content {
             background: white;
-            padding: 30px;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            border-radius: 0 0 8px 8px;
+            border: 1px solid #e0e0e0;
+            border-top: none;
         }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
         
         .stat-card {
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 8px;
             text-align: center;
-            color: white;
+            border: 1px solid #e0e0e0;
+            background: white;
         }
         
         .stat-card.total {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #4a5568;
+            color: white;
+            border-color: #4a5568;
         }
         
         .stat-card.pending {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffeaa7;
         }
         
         .stat-card.processing {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: #d1ecf1;
+            color: #0c5460;
+            border-color: #bee5eb;
         }
         
         .stat-card.completed {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            background: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
         }
         
         .stat-card.failed {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
         }
         
         .stat-card h3 {
-            font-size: 36px;
-            margin-bottom: 10px;
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: bold;
         }
         
         .stat-card p {
-            font-size: 14px;
-            opacity: 0.9;
+            font-size: 13px;
         }
         
         .task-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
             table-layout: fixed;
+            border: 1px solid #e0e0e0;
         }
         
         .task-table th {
             background: #f8f9fa;
-            padding: 15px;
+            padding: 12px 8px;
             text-align: left;
-            font-weight: 600;
+            font-weight: bold;
             color: #333;
             border-bottom: 2px solid #dee2e6;
+            font-size: 13px;
         }
         
+        .task-table th:nth-child(1) { width: 6%; }  /* ID */
+        .task-table th:nth-child(2) { width: 24%; } /* Tên File */
+        .task-table th:nth-child(3) { width: 12%; } /* Trạng Thái */
+        .task-table th:nth-child(4) { width: 14%; } /* Thời Gian Gửi */
+        .task-table th:nth-child(5) { width: 14%; } /* Thời Gian Hoàn Thành */
+        .task-table th:nth-child(6) { width: 10%; } /* Thời Gian Xử Lý */
+        .task-table th:nth-child(7) { width: 20%; } /* Thao Tác */
+        
         .task-table td {
-            padding: 15px;
-            border-bottom: 1px solid #dee2e6;
+            padding: 12px 8px;
+            border-bottom: 1px solid #e0e0e0;
             word-wrap: break-word;
             overflow-wrap: break-word;
+            font-size: 13px;
         }
         
         .task-table td.filename-cell {
@@ -184,58 +206,248 @@
         }
         
         .status-badge {
-            padding: 5px 15px;
-            border-radius: 20px;
+            padding: 4px 12px;
+            border-radius: 4px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: bold;
             display: inline-block;
         }
         
         .status-pending {
             background: #fff3cd;
             color: #856404;
+            border: 1px solid #ffeaa7;
         }
         
         .status-processing {
             background: #d1ecf1;
             color: #0c5460;
+            border: 1px solid #bee5eb;
         }
         
         .status-completed {
             background: #d4edda;
             color: #155724;
+            border: 1px solid #c3e6cb;
         }
         
         .status-failed {
             background: #f8d7da;
             color: #721c24;
+            border: 1px solid #f5c6cb;
         }
         
         .btn-view {
-            padding: 5px 15px;
-            background: #667eea;
+            padding: 6px 10px;
+            background: #4a5568;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 14px;
             text-decoration: none;
             display: inline-block;
+            margin-right: 4px;
+            line-height: 1;
+            transition: all 0.2s;
         }
         
         .btn-view:hover {
-            background: #5568d3;
+            background: #2d3748;
+            transform: translateY(-1px);
+        }
+        
+        .btn-delete {
+            padding: 6px 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            line-height: 1;
+            transition: all 0.2s;
+        }
+        
+        .btn-delete:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+        
+        .btn-delete:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-download {
+            padding: 6px 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 4px;
+            position: relative;
+            line-height: 1;
+            transition: all 0.2s;
+        }
+        
+        .btn-download:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+        
+        /* Dropdown menu cho tải xuống */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        /* Tạo vùng invisible để chuột có thể di chuyển qua menu */
+        .dropdown::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            height: 15px;
+            z-index: 999;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 130px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1000;
+            border-radius: 6px;
+            overflow: hidden;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .dropdown-content::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: white transparent transparent transparent;
+        }
+        
+        .dropdown-content a {
+            color: #333;
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            font-size: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+        
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown:hover .dropdown-content,
+        .dropdown-content:hover {
+            display: block;
+            animation: fadeIn 0.2s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-5px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        .action-buttons {
+            white-space: nowrap;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        
+        /* Tooltip cho icon buttons */
+        .btn-view, .btn-delete, .btn-download {
+            position: relative;
+        }
+        
+        .btn-view::before,
+        .btn-delete::before,
+        .btn-download::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            margin-bottom: 5px;
+        }
+        
+        .btn-view:hover::before,
+        .btn-delete:hover::before,
+        .btn-download:hover::before {
+            opacity: 1;
+        }
+        
+        .download-group {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .download-group h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #333;
         }
         
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 50px 20px;
             color: #666;
         }
         
         .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state p {
+            font-size: 13px;
         }
         
         .modal {
@@ -252,8 +464,9 @@
         .modal-content {
             background: white;
             margin: 5% auto;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
             width: 80%;
             max-width: 800px;
             max-height: 80vh;
@@ -265,12 +478,16 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .modal-header h2 {
+            font-size: 18px;
         }
         
         .close {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             cursor: pointer;
             color: #666;
@@ -281,39 +498,66 @@
         }
         
         .detail-row {
-            padding: 15px 0;
-            border-bottom: 1px solid #dee2e6;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
         }
         
         .detail-row label {
-            font-weight: 600;
+            font-weight: bold;
             color: #333;
             display: block;
             margin-bottom: 5px;
+            font-size: 13px;
         }
         
         .detail-row .value {
             color: #666;
+            font-size: 13px;
         }
         
         .result-text {
             background: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 4px;
             white-space: pre-wrap;
             word-wrap: break-word;
-            max-height: 500px;
+            max-height: 400px;
             overflow-y: auto;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 15px;
-            line-height: 1.8;
-            border: 1px solid #dee2e6;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #e0e0e0;
             color: #333;
         }
         
         .refresh-btn {
             float: right;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .task-table {
+                font-size: 12px;
+            }
+            
+            .task-table th,
+            .task-table td {
+                padding: 8px;
+            }
         }
     </style>
 </head>
@@ -401,7 +645,20 @@
                                 <%= task.getProcessingTimeMs() != null ? (task.getProcessingTimeMs() / 1000.0) + "s" : "-" %>
                             </td>
                             <td>
-                                <button class="btn-view" onclick="viewTask(<%= task.getId() %>)">👁️ Xem</button>
+                                <div class="action-buttons">
+                                    <button class="btn-view" onclick="viewTask(<%= task.getId() %>)" data-tooltip="Xem chi tiết">👁️</button>
+                                    <% if ("COMPLETED".equals(task.getStatus())) { %>
+                                        <div class="dropdown">
+                                            <button class="btn-download" data-tooltip="Tải về">📥</button>
+                                            <div class="dropdown-content">
+                                                <a href="javascript:void(0)" onclick="downloadFile(<%= task.getId() %>, 'txt')">📄 File TXT</a>
+                                                <a href="javascript:void(0)" onclick="downloadFile(<%= task.getId() %>, 'docx')">📝 File Word</a>
+                                                <a href="javascript:void(0)" onclick="downloadFile(<%= task.getId() %>, 'pdf')">📕 File PDF</a>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                    <button class="btn-delete" onclick="deleteTask(<%= task.getId() %>)" id="deleteBtn<%= task.getId() %>" data-tooltip="Xóa task">🗑️</button>
+                                </div>
                             </td>
                         </tr>
                         <% } %>
@@ -514,6 +771,14 @@
                         html += '<label>Kết Quả Speech-to-Text:</label>';
                         html += '<div class="result-text">' + escapeHtml(task.resultText) + '</div>';
                         html += '</div>';
+                        
+                        // Thêm nút tải xuống
+                        html += '<div class="download-group">';
+                        html += '<h3>📥 Tải Xuống Kết Quả</h3>';
+                        html += '<button class="btn-download" onclick="downloadFile(' + task.id + ', \'txt\')">📄 Tải xuống TXT</button>';
+                        html += '<button class="btn-download" onclick="downloadFile(' + task.id + ', \'docx\')">📝 Tải xuống Word</button>';
+                        html += '<button class="btn-download" onclick="downloadFile(' + task.id + ', \'pdf\')">📕 Tải xuống PDF</button>';
+                        html += '</div>';
                     }
                     
                     if (task.status === 'FAILED' && task.resultText) {
@@ -535,6 +800,63 @@
             isModalOpen = false;
             // Restart auto-refresh timer when modal is closed
             startAutoRefresh();
+        }
+        
+        function downloadFile(taskId, format) {
+            // Tạo URL tải xuống
+            const downloadUrl = '<%= request.getContextPath() %>/download/' + taskId + '/' + format;
+            
+            // Mở URL trong tab mới hoặc tự động tải xuống
+            window.location.href = downloadUrl;
+            
+            // Hiển thị thông báo
+            const formatNames = {
+                'txt': 'TXT',
+                'docx': 'Word (DOCX)',
+                'pdf': 'PDF'
+            };
+            
+            console.log('Đang tải xuống task #' + taskId + ' định dạng ' + formatNames[format]);
+        }
+        
+        function deleteTask(taskId) {
+            if (!confirm('Bạn có chắc chắn muốn xóa task #' + taskId + ' không?')) {
+                return;
+            }
+            
+            const deleteBtn = document.getElementById('deleteBtn' + taskId);
+            if (deleteBtn) {
+                deleteBtn.disabled = true;
+                deleteBtn.textContent = '⏳ Đang xóa...';
+            }
+            
+            fetch('<%= request.getContextPath() %>/history?action=delete&taskId=' + taskId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ ' + data.message);
+                    // Reload trang để cập nhật danh sách
+                    location.reload();
+                } else {
+                    alert('❌ ' + data.message);
+                    if (deleteBtn) {
+                        deleteBtn.disabled = false;
+                        deleteBtn.textContent = '🗑️ Xóa';
+                    }
+                }
+            })
+            .catch(error => {
+                alert('❌ Lỗi khi xóa task: ' + error);
+                if (deleteBtn) {
+                    deleteBtn.disabled = false;
+                    deleteBtn.textContent = '🗑️ Xóa';
+                }
+            });
         }
         
         window.onclick = function(event) {

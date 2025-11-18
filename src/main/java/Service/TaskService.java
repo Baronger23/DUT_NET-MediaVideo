@@ -81,4 +81,11 @@ public class TaskService {
     public int getSoLuongTaskTrongQueue() {
         return queueManager.getQueueSize();
     }
+    
+    /**
+     * Xóa task (chỉ cho phép xóa nếu là task của user đó)
+     */
+    public boolean xoaTask(int taskId, int userId) {
+        return taskBO.xoaTask(taskId, userId);
+    }
 }

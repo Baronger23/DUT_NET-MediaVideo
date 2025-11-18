@@ -172,4 +172,22 @@ public class TaskBO {
         
         return count;
     }
+    
+    /**
+     * Xóa task (chỉ cho phép xóa nếu là task của user đó)
+     */
+    public boolean xoaTask(int taskId, int userId) {
+        if (taskId <= 0 || userId <= 0) {
+            System.err.println("Task ID hoặc User ID không hợp lệ");
+            return false;
+        }
+        
+        // Kiểm tra task có thuộc về user không
+        if (!kiemTraTaskThuocUser(taskId, userId)) {
+            System.err.println("User " + userId + " không có quyền xóa task " + taskId);
+            return false;
+        }
+        
+        return taskDAO.xoaTask(taskId, userId);
+    }
 }

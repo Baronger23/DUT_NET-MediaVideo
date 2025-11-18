@@ -27,10 +27,10 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
         }
         
         .container {
@@ -39,72 +39,72 @@
         }
         
         .header {
-            background: white;
-            padding: 20px;
-            border-radius: 10px 10px 0 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #4a5568;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px 8px 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
         .header h1 {
-            color: #667eea;
-            font-size: 24px;
+            font-size: 20px;
         }
         
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
+            font-size: 13px;
         }
         
         .nav-links {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
         
         .btn {
-            padding: 10px 20px;
+            padding: 6px 14px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             text-decoration: none;
             display: inline-block;
-            transition: all 0.3s;
         }
         
         .btn-primary {
-            background: #667eea;
-            color: white;
+            background: white;
+            color: #4a5568;
         }
         
         .btn-primary:hover {
-            background: #5568d3;
+            background: #e2e8f0;
         }
         
         .btn-secondary {
-            background: #6c757d;
+            background: #2d3748;
             color: white;
         }
         
         .btn-secondary:hover {
-            background: #5a6268;
+            background: #1a202c;
         }
         
         .main-content {
             background: white;
-            padding: 40px;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            border-radius: 0 0 8px 8px;
+            border: 1px solid #e0e0e0;
+            border-top: none;
         }
         
         .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-weight: 500;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
         }
         
         .alert-success {
@@ -127,24 +127,35 @@
         
         .upload-section {
             background: #f8f9fa;
-            padding: 30px;
-            border-radius: 10px;
-            border: 2px dashed #667eea;
+            padding: 25px;
+            border-radius: 8px;
+            border: 2px dashed #ccc;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
         .upload-icon {
-            font-size: 64px;
-            color: #667eea;
-            margin-bottom: 20px;
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-section h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .upload-section p {
+            color: #666;
+            font-size: 13px;
+            margin: 8px 0;
         }
         
         .file-input-wrapper {
             position: relative;
             overflow: hidden;
             display: inline-block;
-            margin: 20px 0;
+            margin: 15px 0;
         }
         
         .file-input-wrapper input[type=file] {
@@ -158,35 +169,33 @@
         
         .file-input-label {
             display: inline-block;
-            padding: 15px 30px;
-            background: #667eea;
+            padding: 10px 24px;
+            background: #4a5568;
             color: white;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .file-input-label:hover {
-            background: #5568d3;
-        }
-        
-        .file-name {
-            margin-top: 10px;
-            color: #666;
             font-size: 14px;
         }
         
+        .file-input-label:hover {
+            background: #2d3748;
+        }
+        
+        .file-name {
+            margin-top: 8px;
+            color: #666;
+            font-size: 13px;
+        }
+        
         .submit-btn {
-            padding: 15px 40px;
+            padding: 10px 30px;
             background: #28a745;
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 4px;
+            font-size: 14px;
             cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s;
+            margin-top: 15px;
         }
         
         .submit-btn:hover {
@@ -200,34 +209,72 @@
         
         .queue-info {
             background: #e7f3ff;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #667eea;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border-left: 3px solid #4a5568;
+            font-size: 13px;
         }
         
         .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            gap: 15px;
+            margin-top: 20px;
         }
         
         .info-card {
             background: #f8f9fa;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
             text-align: center;
         }
         
         .info-card h3 {
-            color: #667eea;
-            margin-bottom: 10px;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 16px;
         }
         
         .info-card p {
             color: #666;
-            font-size: 14px;
+            font-size: 13px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #4a5568;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #333;
+            font-size: 13px;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                gap: 8px;
+            }
         }
     </style>
 </head>

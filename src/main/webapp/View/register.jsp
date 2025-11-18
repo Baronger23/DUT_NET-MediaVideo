@@ -13,8 +13,8 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -24,107 +24,101 @@
         
         .register-container {
             background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
             width: 100%;
-            max-width: 450px;
+            max-width: 420px;
         }
         
         .register-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .register-header h1 {
             color: #333;
-            font-size: 28px;
-            margin-bottom: 10px;
+            font-size: 22px;
+            margin-bottom: 6px;
         }
         
         .register-header p {
             color: #666;
-            font-size: 14px;
+            font-size: 13px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: #333;
-            font-weight: 500;
+            font-weight: bold;
+            font-size: 13px;
         }
         
         .form-group label .required {
-            color: #e74c3c;
+            color: #c33;
         }
         
         .form-group input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            border-radius: 4px;
+            font-size: 13px;
         }
         
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #4a5568;
         }
         
         .error-message {
             background-color: #fee;
             color: #c33;
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            border-left: 4px solid #c33;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            border-left: 3px solid #c33;
         }
         
         .password-hint {
             font-size: 12px;
             color: #666;
-            margin-top: 5px;
+            margin-top: 4px;
         }
         
         .btn-register {
             width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 10px;
+            background: #4a5568;
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
         }
         
         .btn-register:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-register:active {
-            transform: translateY(0);
+            background: #2d3748;
         }
         
         .login-link {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 16px;
             color: #666;
-            font-size: 14px;
+            font-size: 13px;
         }
         
         .login-link a {
-            color: #667eea;
+            color: #4a5568;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: bold;
         }
         
         .login-link a:hover {

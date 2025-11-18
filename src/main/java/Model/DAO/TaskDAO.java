@@ -13,9 +13,11 @@ import Model.Bean.Task;
 
 public class TaskDAO {
     private DBConnect dbConnect;
+    private TaskCache taskCache;
     
     public TaskDAO() {
         this.dbConnect = DBConnect.getInstance();
+        this.taskCache = TaskCache.getInstance();
     }
     
     /**
@@ -24,9 +26,12 @@ public class TaskDAO {
      */
     public int themTaskMoi(int userId, String fileName, String serverFilePath, String language) {
         String sql = "INSERT INTO Task (user_id, file_name, server_file_path, status, language, submission_time) VALUES (?, ?, ?, 'PENDING', ?, NOW())";
+        Connection conn = null;
+        PreparedStatement stmt = null;
         
-        try (Connection conn = dbConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             stmt.setInt(1, userId);
             stmt.setString(2, fileName);
@@ -47,6 +52,10 @@ public class TaskDAO {
         } catch (SQLException e) {
             System.err.println("Lỗi khi thêm task mới: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
         }
         
         return -1;
@@ -57,20 +66,29 @@ public class TaskDAO {
      */
     public boolean capNhatStatusProcessing(int taskId) {
         String sql = "UPDATE Task SET status = 'PROCESSING' WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
         
-        try (Connection conn = dbConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
             
             stmt.setInt(1, taskId);
             
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
+                // ✅ Invalidate cache sau khi update
+                taskCache.invalidate(taskId);
                 System.out.println("Đã cập nhật task " + taskId + " sang PROCESSING");
                 return true;
             }
         } catch (SQLException e) {
             System.err.println("Lỗi khi cập nhật status PROCESSING: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
         }
         
         return false;
@@ -81,9 +99,12 @@ public class TaskDAO {
      */
     public boolean capNhatTaskHoanThanh(int taskId, String resultText, int processingTimeMs) {
         String sql = "UPDATE Task SET status = 'COMPLETED', result_text = ?, completion_time = NOW(), processing_time_ms = ? WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
         
-        try (Connection conn = dbConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
             
             // Đảm bảo UTF-8 encoding khi lưu vào database
             if (resultText != null) {
@@ -100,6 +121,8 @@ public class TaskDAO {
             
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
+                // ✅ Invalidate cache sau khi update
+                taskCache.invalidate(taskId);
                 System.out.println("Đã cập nhật task " + taskId + " hoàn thành");
                 return true;
             }
@@ -109,6 +132,10 @@ public class TaskDAO {
         } catch (Exception e) {
             System.err.println("Lỗi UTF-8 encoding: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
         }
         
         return false;
@@ -119,39 +146,55 @@ public class TaskDAO {
      */
     public boolean capNhatTaskThatBai(int taskId, String errorMessage) {
         String sql = "UPDATE Task SET status = 'FAILED', result_text = ?, completion_time = NOW() WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
         
-        try (Connection conn = dbConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
             
             stmt.setString(1, errorMessage);
             stmt.setInt(2, taskId);
             
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
+                // ✅ Invalidate cache sau khi update
+                taskCache.invalidate(taskId);
                 System.out.println("Đã cập nhật task " + taskId + " thất bại");
                 return true;
             }
         } catch (SQLException e) {
             System.err.println("Lỗi khi cập nhật task thất bại: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
         }
         
         return false;
     }
     
     /**
-     * Lấy lịch sử task của user (sắp xếp theo thời gian mới nhất)
+     * ✅ TỐI ƯU: Lấy lịch sử task của user với LIMIT (tránh load quá nhiều)
+     * @param userId ID người dùng
+     * @return Danh sách task (tối đa 100 task gần nhất)
      */
     public List<Task> layLichSuTaskTheoUser(int userId) {
         List<Task> tasks = new ArrayList<>();
-        String sql = "SELECT * FROM Task WHERE user_id = ? ORDER BY submission_time DESC";
+        // Giới hạn 100 task gần nhất để tránh quá tải
+        String sql = "SELECT * FROM Task WHERE user_id = ? ORDER BY submission_time DESC LIMIT 100";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         
-        try (Connection conn = dbConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
             
             stmt.setInt(1, userId);
             
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 Task task = mapResultSetToTask(rs);
                 tasks.add(task);
@@ -159,29 +202,122 @@ public class TaskDAO {
         } catch (SQLException e) {
             System.err.println("Lỗi khi lấy lịch sử task: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (rs != null) try { rs.close(); } catch (SQLException e) {}
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
         }
         
         return tasks;
     }
     
     /**
-     * Lấy thông tin chi tiết một task theo ID
+     * ✅ TỐI ƯU: Lấy lịch sử task với pagination
+     */
+    public List<Task> layLichSuTaskTheoUserPaginated(int userId, int page, int pageSize) {
+        List<Task> tasks = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = "SELECT * FROM Task WHERE user_id = ? ORDER BY submission_time DESC LIMIT ? OFFSET ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
+            
+            stmt.setInt(1, userId);
+            stmt.setInt(2, pageSize);
+            stmt.setInt(3, offset);
+            
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                Task task = mapResultSetToTask(rs);
+                tasks.add(task);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy lịch sử task (paginated): " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (rs != null) try { rs.close(); } catch (SQLException e) {}
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
+        }
+        
+        return tasks;
+    }
+    
+    /**
+     * ✅ TỐI ƯU: Đếm tổng số task của user (cho pagination)
+     */
+    public int demTongSoTaskCuaUser(int userId) {
+        String sql = "SELECT COUNT(*) FROM Task WHERE user_id = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
+            
+            stmt.setInt(1, userId);
+            rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi đếm task: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (rs != null) try { rs.close(); } catch (SQLException e) {}
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
+        }
+        
+        return 0;
+    }
+    
+    /**
+     * ✅ TỐI ƯU: Lấy thông tin chi tiết một task theo ID với cache
      */
     public Task layTaskTheoId(int taskId) {
-        String sql = "SELECT * FROM Task WHERE id = ?";
+        // Kiểm tra cache trước
+        Task cachedTask = taskCache.get(taskId);
+        if (cachedTask != null) {
+            return cachedTask;
+        }
         
-        try (Connection conn = dbConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        // Nếu không có trong cache, query từ DB
+        String sql = "SELECT * FROM Task WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
             
             stmt.setInt(1, taskId);
             
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             if (rs.next()) {
-                return mapResultSetToTask(rs);
+                Task task = mapResultSetToTask(rs);
+                // Lưu vào cache
+                taskCache.put(taskId, task);
+                return task;
             }
         } catch (SQLException e) {
             System.err.println("Lỗi khi lấy task theo ID: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (rs != null) try { rs.close(); } catch (SQLException e) {}
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
         }
         
         return null;
@@ -193,11 +329,15 @@ public class TaskDAO {
     public List<Task> layTatCaTaskPending() {
         List<Task> tasks = new ArrayList<>();
         String sql = "SELECT * FROM Task WHERE status = 'PENDING' ORDER BY submission_time ASC";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         
-        try (Connection conn = dbConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
             
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 Task task = mapResultSetToTask(rs);
                 tasks.add(task);
@@ -205,9 +345,48 @@ public class TaskDAO {
         } catch (SQLException e) {
             System.err.println("Lỗi khi lấy task pending: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (rs != null) try { rs.close(); } catch (SQLException e) {}
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
         }
         
         return tasks;
+    }
+    
+    /**
+     * Xóa task theo ID (chỉ cho phép xóa nếu là task của user đó)
+     */
+    public boolean xoaTask(int taskId, int userId) {
+        String sql = "DELETE FROM Task WHERE id = ? AND user_id = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
+            
+            stmt.setInt(1, taskId);
+            stmt.setInt(2, userId);
+            
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                // ✅ Invalidate cache sau khi xóa
+                taskCache.invalidate(taskId);
+                System.out.println("Đã xóa task " + taskId + " của user " + userId);
+                return true;
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi xóa task: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
+        }
+        
+        return false;
     }
     
     /**

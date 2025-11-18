@@ -17,21 +17,30 @@ public class UserDAO {
     
     public User xacThucDangNhap(String username, String password) {
         String sql = "SELECT * FROM user WHERE username = ? AND password = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         
-        try (Connection conn = dbConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
             
             stmt.setString(1, username);
             // TODO: Trong thực tế cần mã hóa password trước khi so sánh
             stmt.setString(2, password);
             
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             if (rs.next()) {
                 User user = mapResultSetToUser(rs);
                 return user;
             }
         } catch (SQLException e) {
             System.err.println("Lỗi khi xác thực đăng nhập: " + e.getMessage());
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (rs != null) try { rs.close(); } catch (SQLException e) {}
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
         }
         
         return null;
@@ -39,9 +48,12 @@ public class UserDAO {
     
     public boolean dangKyUser(String username, String password, String email) {
         String sql = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+        Connection conn = null;
+        PreparedStatement stmt = null;
         
-        try (Connection conn = dbConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
             
             stmt.setString(1, username);
             // TODO: Trong thực tế cần mã hóa password trước khi lưu
@@ -54,17 +66,25 @@ public class UserDAO {
         } catch (SQLException e) {
             System.err.println("Lỗi khi đăng ký user: " + e.getMessage());
             return false;
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
         }
     }
     
     public boolean kiemTraUsernameTonTai(String username) {
         String sql = "SELECT COUNT(*) FROM user WHERE username = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         
-        try (Connection conn = dbConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
             
             stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             
             if (rs.next()) {
                 return rs.getInt(1) > 0;
@@ -72,6 +92,11 @@ public class UserDAO {
             
         } catch (SQLException e) {
             System.err.println("Lỗi khi kiểm tra username: " + e.getMessage());
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (rs != null) try { rs.close(); } catch (SQLException e) {}
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
         }
         
         return false;
@@ -79,12 +104,16 @@ public class UserDAO {
     
     public boolean kiemTraEmailTonTai(String email) {
         String sql = "SELECT COUNT(*) FROM user WHERE email = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         
-        try (Connection conn = dbConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = dbConnect.getConnection();
+            stmt = conn.prepareStatement(sql);
             
             stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             
             if (rs.next()) {
                 return rs.getInt(1) > 0;
@@ -92,6 +121,11 @@ public class UserDAO {
             
         } catch (SQLException e) {
             System.err.println("Lỗi khi kiểm tra email: " + e.getMessage());
+        } finally {
+            // ✅ QUAN TRỌNG: Trả connection về pool
+            if (rs != null) try { rs.close(); } catch (SQLException e) {}
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+            if (conn != null) dbConnect.releaseConnection(conn);
         }
         
         return false;
