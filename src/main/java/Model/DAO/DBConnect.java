@@ -13,8 +13,10 @@ import java.util.List;
  * - Auto-reconnect khi connection bị lỗi
  */
 public class DBConnect {
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/media_processor_db?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci";
-    private static final String DB_USERNAME = "root";
+    // H2 Database - Embedded mode (file-based)
+    // Database sẽ được tạo tự động tại thư mục user.home hoặc project folder
+    private static final String DB_URL = "jdbc:h2:~/media_processor_db;AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1;MODE=MySQL";
+    private static final String DB_USERNAME = "sa";
     private static final String DB_PASSWORD = ""; 
     
     private static DBConnect instance;
@@ -30,19 +32,21 @@ public class DBConnect {
      */
     private DBConnect() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.h2.Driver");
             
             // Tạo sẵn một số connections
             for (int i = 0; i < INITIAL_POOL_SIZE; i++) {
                 availableConnections.add(createNewConnection());
             }
             
-            System.out.println("✅ Connection Pool đã được khởi tạo");
+            System.out.println("✅ H2 Database Connection Pool đã được khởi tạo");
+            System.out.println("   - Database: ~/media_processor_db");
             System.out.println("   - Initial Pool Size: " + INITIAL_POOL_SIZE + " connections");
             System.out.println("   - Max Pool Size: " + MAX_POOL_SIZE + " connections");
+            System.out.println("   - H2 Console: http://localhost:8082 (nếu đã bật)");
             
         } catch (ClassNotFoundException e) {
-            System.err.println("❌ Không tìm thấy MySQL JDBC Driver: " + e.getMessage());
+            System.err.println("❌ Không tìm thấy H2 JDBC Driver: " + e.getMessage());
         } catch (SQLException e) {
             System.err.println("❌ Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
         }
@@ -53,14 +57,7 @@ public class DBConnect {
      */
     private Connection createNewConnection() throws SQLException {
         Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-        // Đảm bảo charset UTF-8
-        if (conn != null && !conn.isClosed()) {
-            try (var stmt = conn.createStatement()) {
-                stmt.execute("SET NAMES 'utf8mb4'");
-                stmt.execute("SET CHARACTER SET utf8mb4");
-                stmt.execute("SET character_set_connection=utf8mb4");
-            }
-        }
+        // H2 đã hỗ trợ UTF-8 mặc định, không cần set thêm
         return conn;
     }
     
