@@ -14,14 +14,7 @@ import org.vosk.Recognizer;
 import Model.Bean.Task;
 import Model.BO.TaskBO;
 
-/**
- * ✅ TỐI ƯU HÓA: Worker Service với Vosk Speech-to-Text (Offline)
- * - Sử dụng shared model từ VoskModelManager (tiết kiệm 50% RAM)
- * - Không cần API key
- * - Chạy offline (local)
- * - Hỗ trợ tiếng Việt + tiếng Anh
- * - PHẦN 30% ĐIỂM - Tính toán lớn
- */
+
 public class WorkerServiceVosk implements Runnable {
     private TaskBO taskBO;
     private QueueManager queueManager;
@@ -90,7 +83,7 @@ public class WorkerServiceVosk implements Runnable {
             System.out.println("[" + workerName + "] Đang xử lý file: " + filePath);
             System.out.println("[" + workerName + "] Ngôn ngữ: " + (language.equals("vi") ? "Tiếng Việt" : "Tiếng Anh"));
             
-            // ===== PHẦN 30% ĐIỂM: SPEECH-TO-TEXT với VOSK =====
+
             String resultText = thucHienSpeechToTextVosk(filePath, language);
             
             long endTime = System.currentTimeMillis();
@@ -168,7 +161,7 @@ public class WorkerServiceVosk implements Runnable {
                 if (recognizer.acceptWaveForm(buffer, bytesRead)) {
                     String partialResult = recognizer.getResult();
                     
-                    // ⚠️ FIX: Vosk native library trả về string với encoding sai
+                    // ⚠️ FIX: Vosk native library trả về UTF-8 bytes nhưng Java String nhận nhầm là ISO-8859-1
                     partialResult = fixVoskEncoding(partialResult);
                     
                     // Parse JSON result (format: {"text":"..."})
@@ -182,7 +175,7 @@ public class WorkerServiceVosk implements Runnable {
             // Lấy kết quả cuối cùng
             String finalResult = recognizer.getFinalResult();
             
-            // ⚠️ FIX: Vosk native library trả về string với encoding sai
+            // ⚠️ FIX: Vosk native library trả về UTF-8 bytes nhưng Java String nhận nhầm là ISO-8859-1
             finalResult = fixVoskEncoding(finalResult);
             
             String finalText = extractTextFromJson(finalResult);
@@ -273,70 +266,57 @@ public class WorkerServiceVosk implements Runnable {
     
     /**
      * Parse JSON result từ Vosk (format: {"text":"..."})
-     * Xử lý đúng UTF-8 encoding cho tiếng Việt
      */
     private String extractTextFromJson(String json) {
         if (json == null || json.isEmpty()) {
             return "";
         }
         
-        try {
-            // Đảm bảo string được xử lý dưới dạng UTF-8
-            byte[] utf8Bytes = json.getBytes("UTF-8");
-            String utf8Json = new String(utf8Bytes, "UTF-8");
-            
-            // Simple JSON parsing với xử lý escape characters
-            int textIndex = utf8Json.indexOf("\"text\"");
-            if (textIndex == -1) {
-                return "";
-            }
-            
-            int startQuote = utf8Json.indexOf("\"", textIndex + 6);
-            if (startQuote == -1) {
-                return "";
-            }
-            
-            // Tìm endQuote, chú ý xử lý escaped quotes
-            int endQuote = startQuote + 1;
-            while (endQuote < utf8Json.length()) {
-                char c = utf8Json.charAt(endQuote);
-                if (c == '"' && utf8Json.charAt(endQuote - 1) != '\\') {
-                    break;
-                }
-                endQuote++;
-            }
-            
-            if (endQuote >= utf8Json.length()) {
-                return "";
-            }
-            
-            String extractedText = utf8Json.substring(startQuote + 1, endQuote);
-            
-            // Xử lý escape characters
-            extractedText = extractedText.replace("\\n", "\n")
-                                       .replace("\\r", "\r")
-                                       .replace("\\t", "\t")
-                                       .replace("\\\"", "\"")
-                                       .replace("\\\\", "\\");
-            
-            return extractedText;
-            
-        } catch (Exception e) {
-            // Fallback về cách cũ nếu có lỗi
-            int textIndex = json.indexOf("\"text\"");
-            if (textIndex == -1) return "";
-            int startQuote = json.indexOf("\"", textIndex + 6);
-            if (startQuote == -1) return "";
-            int endQuote = json.indexOf("\"", startQuote + 1);
-            if (endQuote == -1) return "";
-            return json.substring(startQuote + 1, endQuote);
+        // Simple JSON parsing - Vosk đã trả về UTF-8 đúng
+        int textIndex = json.indexOf("\"text\"");
+        if (textIndex == -1) {
+            return "";
         }
+        
+        int startQuote = json.indexOf("\"", textIndex + 6);
+        if (startQuote == -1) {
+            return "";
+        }
+        
+        // Tìm endQuote, chú ý xử lý escaped quotes
+        int endQuote = startQuote + 1;
+        while (endQuote < json.length()) {
+            char c = json.charAt(endQuote);
+            if (c == '"' && json.charAt(endQuote - 1) != '\\') {
+                break;
+            }
+            endQuote++;
+        }
+        
+        if (endQuote >= json.length()) {
+            return "";
+        }
+        
+        String extractedText = json.substring(startQuote + 1, endQuote);
+        
+        // Xử lý escape characters
+        extractedText = extractedText.replace("\\n", "\n")
+                                   .replace("\\r", "\r")
+                                   .replace("\\t", "\t")
+                                   .replace("\\\"", "\"")
+                                   .replace("\\\\", "\\");
+        
+        return extractedText;
     }
     
     /**
      * ⚠️ FIX LỖI ENCODING TỪ VOSK NATIVE LIBRARY
-     * Vosk (C++) trả về string với encoding sai trên Windows
-     * Cần convert từ ISO-8859-1 hoặc Windows-1252 sang UTF-8
+     * 
+     * VẤN ĐỀ: Vosk native library (C++) trả về UTF-8 bytes,
+     * nhưng JNI bridge tự động convert sang String với encoding ISO-8859-1 (default),
+     * gây ra lỗi hiển thị tiếng Việt: "chÃ o má»«ng" thay vì "chào mừng"
+     * 
+     * GIẢI PHÁP: Convert lại từ ISO-8859-1 bytes sang UTF-8 String
      */
     private String fixVoskEncoding(String voskResult) {
         if (voskResult == null || voskResult.isEmpty()) {
@@ -344,44 +324,14 @@ public class WorkerServiceVosk implements Runnable {
         }
         
         try {
-            // Thử các phương pháp fix encoding phổ biến
-            String[] encodings = {
-                "ISO-8859-1",
-                "Windows-1252",
-                "Cp1252",
-                "US-ASCII",
-                "UTF-16",
-                "UTF-16LE",
-                "UTF-16BE"
-            };
+            // Vosk trả về UTF-8 bytes nhưng Java nhận nhầm là ISO-8859-1
+            // Ta cần lấy lại bytes với encoding ISO-8859-1, rồi decode lại với UTF-8
+            byte[] utf8Bytes = voskResult.getBytes("ISO-8859-1");
+            String fixedResult = new String(utf8Bytes, "UTF-8");
             
-            for (String encoding : encodings) {
-                try {
-                    byte[] bytes = voskResult.getBytes(encoding);
-                    String fixed = new String(bytes, "UTF-8");
-                    
-                    // Kiểm tra xem có hợp lệ không
-                    // Kiểm tra có chứa ký tự tiếng Việt hợp lệ
-                    boolean hasValidVietnamese = fixed.matches(".*[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ].*");
-                    boolean noReplacementChar = !fixed.contains("�");
-                    
-                    if (hasValidVietnamese && noReplacementChar) {
-                        return fixed;
-                    }
-                } catch (Exception e) {
-                    // Encoding không khả dụng, thử tiếp
-                }
-            }
-            
-            // Phương pháp cuối cùng: Nếu string gốc đã là UTF-8
-            if (voskResult.matches(".*[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ].*")) {
-                return voskResult;
-            }
-            
-            // Nếu tất cả đều thất bại, trả về original
-            return voskResult;
-            
+            return fixedResult;
         } catch (Exception e) {
+            System.err.println("[" + workerName + "] ⚠️ Lỗi khi fix encoding, trả về string gốc: " + e.getMessage());
             return voskResult;
         }
     }

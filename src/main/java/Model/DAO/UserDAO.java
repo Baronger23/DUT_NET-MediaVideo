@@ -16,7 +16,7 @@ public class UserDAO {
     }
     
     public User xacThucDangNhap(String username, String password) {
-        String sql = "SELECT * FROM user WHERE username = ? AND password = ?";
+        String sql = "SELECT * FROM \"user\" WHERE username = ? AND password = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -47,7 +47,7 @@ public class UserDAO {
     }
     
     public boolean dangKyUser(String username, String password, String email) {
-        String sql = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO \"user\" (username, password, email) VALUES (?, ?, ?)";
         Connection conn = null;
         PreparedStatement stmt = null;
         
@@ -74,7 +74,7 @@ public class UserDAO {
     }
     
     public boolean kiemTraUsernameTonTai(String username) {
-        String sql = "SELECT COUNT(*) FROM user WHERE username = ?";
+        String sql = "SELECT COUNT(*) FROM \"user\" WHERE username = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -103,7 +103,7 @@ public class UserDAO {
     }
     
     public boolean kiemTraEmailTonTai(String email) {
-        String sql = "SELECT COUNT(*) FROM user WHERE email = ?";
+        String sql = "SELECT COUNT(*) FROM \"user\" WHERE email = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;

@@ -106,16 +106,9 @@ public class TaskDAO {
             conn = dbConnect.getConnection();
             stmt = conn.prepareStatement(sql);
             
-            // Đảm bảo UTF-8 encoding khi lưu vào database
-            if (resultText != null) {
-                // Convert sang UTF-8 bytes rồi tạo lại String để đảm bảo encoding đúng
-                byte[] utf8Bytes = resultText.getBytes("UTF-8");
-                String utf8Text = new String(utf8Bytes, "UTF-8");
-                stmt.setString(1, utf8Text);
-            } else {
-                stmt.setString(1, null);
-            }
-            
+            // H2 Database với CHARSET=UTF-8 đã tự động xử lý encoding
+            // KHÔNG cần convert, chỉ cần set string trực tiếp
+            stmt.setString(1, resultText);
             stmt.setInt(2, processingTimeMs);
             stmt.setInt(3, taskId);
             
@@ -128,9 +121,6 @@ public class TaskDAO {
             }
         } catch (SQLException e) {
             System.err.println("Lỗi khi cập nhật task hoàn thành: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.err.println("Lỗi UTF-8 encoding: " + e.getMessage());
             e.printStackTrace();
         } finally {
             // ✅ QUAN TRỌNG: Trả connection về pool
@@ -406,21 +396,10 @@ public class TaskDAO {
         String language = rs.getString("language");
         task.setLanguage(language != null ? language : "vi");
         
-        // Đọc result_text với UTF-8 encoding đúng cách
+        // Đọc result_text - H2 Database đã tự động xử lý UTF-8
+        // KHÔNG cần convert encoding vì H2 đã lưu đúng UTF-8
         String resultText = rs.getString("result_text");
-        if (resultText != null) {
-            try {
-                // Đảm bảo UTF-8 encoding khi đọc từ database
-                byte[] utf8Bytes = resultText.getBytes("ISO-8859-1");
-                String utf8Text = new String(utf8Bytes, "UTF-8");
-                task.setResultText(utf8Text);
-            } catch (Exception e) {
-                // Nếu lỗi, dùng text gốc
-                task.setResultText(resultText);
-            }
-        } else {
-            task.setResultText(null);
-        }
+        task.setResultText(resultText);
         
         // processingTimeMs có thể null
         int processingTime = rs.getInt("processing_time_ms");

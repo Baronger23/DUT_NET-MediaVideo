@@ -96,6 +96,9 @@ public class DownloadController extends HttpServlet {
             byte[] fileContent;
             String fileExtension;
             
+            // ✅ Đảm bảo response encoding là UTF-8
+            response.setCharacterEncoding("UTF-8");
+            
             switch (format) {
                 case "txt":
                     response.setContentType("text/plain; charset=UTF-8");
@@ -105,13 +108,13 @@ public class DownloadController extends HttpServlet {
                     
                 case "docx":
                 case "word":
-                    response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document; charset=UTF-8");
                     fileExtension = ".docx";
                     fileContent = exportService.exportToDocx(task.getResultText(), task.getFileName());
                     break;
                     
                 case "pdf":
-                    response.setContentType("application/pdf");
+                    response.setContentType("application/pdf; charset=UTF-8");
                     fileExtension = ".pdf";
                     fileContent = exportService.exportToPdf(task.getResultText(), task.getFileName());
                     break;

@@ -3,8 +3,8 @@
 -- Script khởi tạo database cho H2 (thay thế MySQL)
 -- ===================================================================
 
--- Tạo bảng User
-CREATE TABLE IF NOT EXISTS user (
+-- Tạo bảng User (escape vì "user" là reserved keyword trong H2)
+CREATE TABLE IF NOT EXISTS "user" (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS Task (
     submission_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completion_time TIMESTAMP NULL,
     processing_time_ms INT DEFAULT 0,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
 );
 
 -- Tạo index để tăng tốc truy vấn
@@ -34,7 +34,7 @@ CREATE INDEX IF NOT EXISTS idx_task_language ON Task(language);
 
 -- Insert dữ liệu mẫu
 -- User demo
-INSERT INTO user (username, password, email) VALUES 
+INSERT INTO "user" (username, password, email) VALUES 
 ('admin', 'admin123', 'admin@example.com'),
 ('demo', 'demo123', 'demo@example.com');
 
@@ -46,5 +46,5 @@ INSERT INTO Task (user_id, file_name, server_file_path, status, language, result
 
 -- Hiển thị kết quả
 SELECT 'Database initialized successfully!' AS message;
-SELECT * FROM user;
+SELECT * FROM "user";
 SELECT * FROM Task;

@@ -76,16 +76,16 @@ public class TaskDetailController extends HttpServlet {
             // Trả về JSON hoặc forward đến JSP
             String format = request.getParameter("format");
             if ("json".equals(format)) {
-                // Trả về JSON với UTF-8 encoding
-                response.setContentType("application/json; charset=UTF-8");
+                // ✅ Set UTF-8 encoding trước khi lấy Writer
                 response.setCharacterEncoding("UTF-8");
+                response.setContentType("application/json; charset=UTF-8");
                 
                 String jsonResponse = taskToJson(task);
                 
-                // Đảm bảo UTF-8 khi ghi response
-                byte[] utf8Bytes = jsonResponse.getBytes("UTF-8");
-                response.getOutputStream().write(utf8Bytes);
-                response.getOutputStream().flush();
+                // ✅ Sử dụng Writer thay vì OutputStream để tránh double encoding
+                // Writer tự động xử lý encoding đúng cách
+                response.getWriter().write(jsonResponse);
+                response.getWriter().flush();
             } else {
                 // Forward đến JSP để hiển thị chi tiết
                 request.setAttribute("task", task);

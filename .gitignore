@@ -6,6 +6,16 @@ target/
 # Models folder (too large for GitHub)
 models/
 
+# ✅ H2 Database files (không push lên GitHub)
+*.mv.db
+*.trace.db
+*.lock.db
+media_processor_db*
+
+# ✅ Uploads folder (chứa file audio/video của user)
+uploads/
+src/main/webapp/uploads/
+
 # Keep source files - src/ will be tracked
 # !src/
 
@@ -44,3 +54,7 @@ Thumbs.db
 *.bak
 *.swp
 *~.nib
+
+# ✅ Vosk models cache
+vosk-model-*/
+*.vosk
