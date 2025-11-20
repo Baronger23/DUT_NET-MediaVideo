@@ -106,7 +106,7 @@ public class TaskDAO {
             conn = dbConnect.getConnection();
             stmt = conn.prepareStatement(sql);
             
-            // H2 Database với CHARSET=UTF-8 đã tự động xử lý encoding
+            // H2 Database v2.x tự động sử dụng UTF-8 encoding
             // KHÔNG cần convert, chỉ cần set string trực tiếp
             stmt.setString(1, resultText);
             stmt.setInt(2, processingTimeMs);

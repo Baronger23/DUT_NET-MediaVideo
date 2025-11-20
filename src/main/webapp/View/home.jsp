@@ -257,7 +257,7 @@
                 <div class="feature-icon">📤</div>
                 <h3>Upload Media</h3>
                 <p>Upload file video hoặc audio để chuyển đổi thành văn bản. Hỗ trợ nhiều định dạng: MP4, MP3, WAV, M4A...</p>
-                <a href="<%= request.getContextPath() %>/upload" class="btn-primary">Bắt đầu Upload</a>
+                <a href="<%= request.getContextPath() %>/upload-tcp" class="btn-primary">Bắt đầu Upload</a>
             </div>
             
             <div class="feature-card">

@@ -1,3 +1,4 @@
+
 package Service;
 
 import java.util.List;
@@ -8,7 +9,11 @@ import Model.BO.TaskBO;
 /**
  * Service Layer - Logic nghiệp vụ cho Task
  * Kết nối giữa Controller và BO, tích hợp với Queue
+ * 
+ * ❌ FILE NÀY DÀNH CHO KIẾN TRÚC IN-PROCESS THREADING
+ * ✅ KIẾN TRÚC TCP SOCKET KHÔNG SỬ DỤNG FILE NÀY
  */
+
 public class TaskService {
     private TaskBO taskBO;
     private QueueManager queueManager;
@@ -26,6 +31,7 @@ public class TaskService {
      * @param language Ngôn ngữ (vi=Tiếng Việt, en=Tiếng Anh)
      * @return Task ID nếu thành công, -1 nếu thất bại
      */
+
     public int taoVaDayTaskVaoQueue(int userId, String fileName, String serverFilePath, String language) {
         // 1. Tạo Task trong Database với status PENDING và language
         int taskId = taskBO.taoTaskMoi(userId, fileName, serverFilePath, language);
@@ -48,8 +54,38 @@ public class TaskService {
     }
     
     /**
+     * Tạo task mới KHÔNG đẩy vào Queue (dành cho TCP mode)
+     * @param userId ID người dùng
+     * @param fileName Tên file
+     * @param serverFilePath Đường dẫn file trên server
+     * @param language Ngôn ngữ
+     * @return Task ID nếu thành công, -1 nếu thất bại
+     */
+
+    public int taoTaskMoi(int userId, String fileName, String serverFilePath, String language) {
+        return taskBO.taoTaskMoi(userId, fileName, serverFilePath, language);
+    }
+    
+    /**
+     * Cập nhật trạng thái task
+     * @param taskId ID task
+     * @param status Trạng thái mới
+     * @param errorMessage Thông báo lỗi (nếu có)
+     */
+
+    public void capNhatTrangThaiTask(int taskId, String status, String errorMessage) {
+        if (status.equals("FAILED")) {
+            taskBO.datTaskThatBai(taskId, errorMessage);
+        } else {
+            // Update status only
+            taskBO.datTaskDangXuLy(taskId);
+        }
+    }
+    
+    /**
      * Lấy lịch sử task của user
      */
+
     public List<Task> layLichSuTask(int userId) {
         return taskBO.layLichSuTask(userId);
     }
@@ -57,6 +93,7 @@ public class TaskService {
     /**
      * Lấy chi tiết một task
      */
+
     public Task layThongTinTask(int taskId) {
         return taskBO.layThongTinTask(taskId);
     }
@@ -64,6 +101,7 @@ public class TaskService {
     /**
      * Kiểm tra task có thuộc về user không (bảo mật)
      */
+
     public boolean kiemTraQuyenTruyCap(int taskId, int userId) {
         return taskBO.kiemTraTaskThuocUser(taskId, userId);
     }
@@ -71,6 +109,7 @@ public class TaskService {
     /**
      * Đếm số task theo trạng thái
      */
+
     public int demTaskTheoTrangThai(int userId, String status) {
         return taskBO.demTaskTheoTrangThai(userId, status);
     }
@@ -78,6 +117,7 @@ public class TaskService {
     /**
      * Lấy số lượng task đang chờ trong queue
      */
+
     public int getSoLuongTaskTrongQueue() {
         return queueManager.getQueueSize();
     }
@@ -85,6 +125,7 @@ public class TaskService {
     /**
      * Xóa task (chỉ cho phép xóa nếu là task của user đó)
      */
+
     public boolean xoaTask(int taskId, int userId) {
         return taskBO.xoaTask(taskId, userId);
     }

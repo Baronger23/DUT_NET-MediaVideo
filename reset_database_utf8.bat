@@ -26,7 +26,7 @@ if exist "%DB_TRACE%" (
 
 echo.
 echo [3/3] Restart Tomcat to create new database with UTF-8...
-echo       New database will be created with CHARSET=UTF-8
+echo       H2 v2.x automatically uses UTF-8 encoding
 echo.
 
 echo ========================================

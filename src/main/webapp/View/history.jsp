@@ -569,7 +569,7 @@
                 <span>👤 <%= user.getUsername() %></span>
                 <div class="nav-links">
                     <a href="<%= request.getContextPath() %>/home" class="btn btn-secondary">Home</a>
-                    <a href="<%= request.getContextPath() %>/upload" class="btn btn-primary">Upload</a>
+                    <a href="<%= request.getContextPath() %>/upload-tcp" class="btn btn-primary">Upload</a>
                     <a href="<%= request.getContextPath() %>/logout" class="btn btn-secondary">Đăng xuất</a>
                 </div>
             </div>
@@ -670,7 +670,7 @@
                     <h3>Chưa có task nào</h3>
                     <p>Hãy upload file media để bắt đầu!</p>
                     <br>
-                    <a href="<%= request.getContextPath() %>/upload" class="btn btn-primary">📤 Upload File</a>
+                    <a href="<%= request.getContextPath() %>/upload-tcp" class="btn btn-primary">📤 Upload File</a>
                 </div>
             <% } %>
         </div>

@@ -125,11 +125,35 @@ public class DatabaseInitListener implements ServletContextListener {
         System.out.println("🛑 ĐÓNG KẾT NỐI DATABASE...");
         System.out.println("========================================");
         
+        Connection conn = null;
+        Statement stmt = null;
+        
+        try {
+            // ✅ QUAN TRỌNG: Shutdown H2 Database trước khi đóng connections
+            conn = DBConnect.getInstance().getConnection();
+            stmt = conn.createStatement();
+            stmt.execute("SHUTDOWN");
+            System.out.println("✅ H2 Database đã được shutdown");
+        } catch (Exception e) {
+            System.err.println("⚠️ Lỗi khi shutdown H2: " + e.getMessage());
+        } finally {
+            if (stmt != null) {
+                try { stmt.close(); } catch (Exception e) {}
+            }
+            if (conn != null) {
+                try { conn.close(); } catch (Exception e) {}
+            }
+        }
+        
         try {
             DBConnect.getInstance().closeAllConnections();
             System.out.println("✅ Đã đóng tất cả connections");
         } catch (Exception e) {
             System.err.println("❌ Lỗi khi đóng connections: " + e.getMessage());
         }
+        
+        System.out.println("========================================");
+        System.out.println("✅ DATABASE SHUTDOWN HOÀN TẤT");
+        System.out.println("========================================");
     }
 }

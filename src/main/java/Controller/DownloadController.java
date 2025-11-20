@@ -15,23 +15,24 @@ import java.net.URLEncoder;
 
 import Model.Bean.Task;
 import Model.Bean.User;
-import Service.TaskService;
+import Model.BO.TaskBO;
 import Service.ExportService;
 
 /**
  * Controller xử lý tải xuống kết quả Speech-to-Text
  * Hỗ trợ định dạng: TXT, DOCX, PDF
+ * ✅ Đã chuyển sang TaskBO (phù hợp với kiến trúc TCP)
  */
 @WebServlet("/download/*")
 public class DownloadController extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private TaskService taskService;
+    private TaskBO taskBO;
     private ExportService exportService;
     
     @Override
     public void init() throws ServletException {
         super.init();
-        this.taskService = new TaskService();
+        this.taskBO = new TaskBO();
         this.exportService = new ExportService();
     }
     
@@ -66,13 +67,13 @@ public class DownloadController extends HttpServlet {
             String format = pathParts[1].toLowerCase();
             
             // Kiểm tra quyền truy cập
-            if (!taskService.kiemTraQuyenTruyCap(taskId, user.getId())) {
+            if (!taskBO.kiemTraTaskThuocUser(taskId, user.getId())) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Không có quyền truy cập task này");
                 return;
             }
             
             // Lấy thông tin task
-            Task task = taskService.layThongTinTask(taskId);
+            Task task = taskBO.layThongTinTask(taskId);
             
             if (task == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Không tìm thấy task");

@@ -12,21 +12,22 @@ import java.util.List;
 
 import Model.Bean.Task;
 import Model.Bean.User;
-import Service.TaskService;
+import Model.BO.TaskBO;
 
 /**
  * HistoryController - Xem lịch sử Task
  * Bước 6: Người dùng xem danh sách Task và kết quả xử lý
+ * ✅ Đã chuyển sang TaskBO (phù hợp với kiến trúc TCP)
  */
 @WebServlet("/history")
 public class HistoryController extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private TaskService taskService;
+    private TaskBO taskBO;
     
     @Override
     public void init() throws ServletException {
         super.init();
-        this.taskService = new TaskService();
+        this.taskBO = new TaskBO();
     }
     
     public HistoryController() {
@@ -53,13 +54,13 @@ public class HistoryController extends HttpServlet {
         
         try {
             // ===== BƯỚC 6: LẤY LỊCH SỬ TASK CỦA USER =====
-            List<Task> taskHistory = taskService.layLichSuTask(user.getId());
+            List<Task> taskHistory = taskBO.layLichSuTask(user.getId());
             
             // Thống kê theo trạng thái
-            int pendingCount = taskService.demTaskTheoTrangThai(user.getId(), "PENDING");
-            int processingCount = taskService.demTaskTheoTrangThai(user.getId(), "PROCESSING");
-            int completedCount = taskService.demTaskTheoTrangThai(user.getId(), "COMPLETED");
-            int failedCount = taskService.demTaskTheoTrangThai(user.getId(), "FAILED");
+            int pendingCount = taskBO.demTaskTheoTrangThai(user.getId(), "PENDING");
+            int processingCount = taskBO.demTaskTheoTrangThai(user.getId(), "PROCESSING");
+            int completedCount = taskBO.demTaskTheoTrangThai(user.getId(), "COMPLETED");
+            int failedCount = taskBO.demTaskTheoTrangThai(user.getId(), "FAILED");
             
             // Đặt attributes để hiển thị trên JSP
             request.setAttribute("taskHistory", taskHistory);
@@ -122,7 +123,7 @@ public class HistoryController extends HttpServlet {
             int taskId = Integer.parseInt(taskIdStr);
             
             // Xóa task
-            boolean success = taskService.xoaTask(taskId, user.getId());
+            boolean success = taskBO.xoaTask(taskId, user.getId());
             
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");

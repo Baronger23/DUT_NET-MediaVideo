@@ -15,7 +15,7 @@ import java.util.List;
 public class DBConnect {
     // H2 Database - Embedded mode (file-based)
     // Database sẽ được tạo tự động tại thư mục user.home hoặc project folder
-    // ✅ H2 v2.x tự động sử dụng UTF-8, không cần set CHARSET
+    // ✅ H2 v2.x tự động sử dụng UTF-8, KHÔNG CẦN parameter CHARSET
     private static final String DB_URL = "jdbc:h2:~/media_processor_db;AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1;MODE=MySQL";
     private static final String DB_USERNAME = "sa";
     private static final String DB_PASSWORD = ""; 
